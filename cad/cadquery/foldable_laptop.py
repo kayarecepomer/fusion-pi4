@@ -57,15 +57,14 @@ class Parts:
     active_dx: float = 0.0
     active_dy: float = 0.0
 
-    # Raspberry Pi 5 + Waveshare NVMe HAT (under the Pi) + Waveshare IO
-    # adapter plugged into the Pi's micro-HDMI/USB-C edge (STEP)
+    # Raspberry Pi 5 + Waveshare NVMe HAT (under the Pi) (STEP). PiDeck's
+    # Waveshare IO adapter is NOT used: short right-angle micro-HDMI / USB-C
+    # cables replace it, which saves ~35 mm of base depth.
     pi_w: float = 90.1  # incl. USB/Ethernet overhang
     pi_overhang: float = 5.1
     pi_board_w: float = 85.0
     pi_board_d: float = 56.0
     pi_d: float = 57.7
-    io_d: float = 34.6  # IO adapter reach beyond the Pi's HDMI edge
-    io_t: float = 18.8
     pi_stack_h: float = 26.1  # SSD bottom -> top of USB/Ethernet
     pi_board_z: float = 4.6  # Pi board bottom above stack bottom
     pi_hole_dx: float = 58.0
@@ -99,7 +98,7 @@ class Design:
 
     # Overall footprint (lid and base share it)
     W: float = 186.0  # keyboard 179.4 + clearance + walls
-    D: float = 174.0  # keyboard row + Pi/IO-adapter block (92.3 deep)
+    D: float = 154.0  # set by the lid: 124.2 screen + hinge zone
 
     wall: float = 2.5
     floor: float = 2.0
@@ -110,7 +109,7 @@ class Design:
     # Lid
     bezel_t: float = 2.0
     back_t: float = 2.0
-    disp_front_margin: float = 15.0  # lid front edge -> display edge
+    disp_front_margin: float = 8.0  # lid front edge -> display edge
 
     # Pi block sits this far in from the left wall so plugs fit (port recess)
     port_gap: float = 12.0
@@ -123,7 +122,7 @@ class Design:
     # Cable channel through the middle of the hinge (flat FPC HDMI ribbon)
     cable_w: float = 26.0
     cable_slot: float = 6.0
-    cable_x: float = 30.0  # centre of the channel, right of the Pi block
+    cable_x: float = -10.0  # centre of the channel, right above the Pi's micro-HDMI ports
 
     fillet_r: float = 3.0
 
@@ -173,27 +172,27 @@ class Design:
     def bay_y1(self) -> float:
         return self.bay_y0 + self.p.bat_d + 1.0
 
-    # Pi block (Pi + HAT + IO adapter): rear-left. All ports (USB, Ethernet,
-    # the adapter's 2x HDMI + USB-C) face the left wall. Pi at the rear,
-    # IO adapter in front of it.
+    # Pi + HAT block: rear-left, right behind the keyboard tub. USB/Ethernet
+    # face the left wall; the micro-HDMI/USB-C edge faces the hinge, with a
+    # gap for right-angle plugs and the display ribbon.
     @property
     def pi_x0(self) -> float:
         """x of the port end (USB/Ethernet face)."""
         return -self.W / 2 + self.wall + self.port_gap
 
     @property
-    def pi_y1(self) -> float:
-        """Rear edge of the Pi board/envelope."""
-        return self.D - self.wall - 1.0
-
-    @property
     def pi_y0(self) -> float:
-        """Front edge of the Pi envelope (IO adapter starts here)."""
-        return self.pi_y1 - self.p.pi_d
+        """Front edge of the Pi envelope (just behind the keyboard tub)."""
+        return self.kb_y0 + self.p.kb_d + 2 * self.kb_clr + 2.0 + 1.0
 
     @property
-    def io_y0(self) -> float:
-        return self.pi_y0 - self.p.io_d
+    def pi_y1(self) -> float:
+        """Rear edge (micro-HDMI / USB-C side)."""
+        return self.pi_y0 + self.p.pi_d
+
+    @property
+    def plug_gap(self) -> float:
+        return self.D - self.wall - self.pi_y1
 
     @property
     def pi_z0(self) -> float:
@@ -287,18 +286,17 @@ def base_screw_points(d: Design):
 
 def magnet_points(d: Design):
     """Lid-latch magnets: 2 at the front edge, 2 in the lid chin / rear deck."""
-    return [(-30.0, 4.5), (30.0, 4.5), (-60.0, 150.0), (60.0, 150.0)]
+    return [(-30.0, 4.5), (30.0, 4.5), (-52.0, d.D - 16.0), (52.0, d.D - 16.0)]
 
 
 def port_cutters(d: Design):
     p = d.p
     cuts = []
-    # One I/O window in the left wall for the whole Pi block: Pi USB +
-    # Ethernet (rear) and the IO adapter's 2x HDMI + USB-C (front). The block
-    # sits port_gap in from the wall so overmoulded plugs fit.
+    # I/O window in the left wall for the Pi's USB + Ethernet. The Pi sits
+    # port_gap in from the wall so overmoulded plugs fit.
     cuts.append(
         box(-d.W / 2 - 1, -d.W / 2 + d.wall + 1,
-            d.io_y0 + 1.0, d.pi_y1 - 1.0,
+            d.pi_y0 + 1.0, d.pi_y1 - 1.0,
             d.pi_z0 + 1.0, d.pi_z0 + p.pi_stack_h - 1.0)
     )
     # Power bank charge/switch window, right wall at the bay
@@ -411,7 +409,7 @@ def build_base(d: Design):
     # 4010 fan grill + M3 holes in the deck, right-rear bay (there is only
     # ~4 mm above the 26.1 mm Pi stack, so the fan can't sit over the Pi)
     fx = d.W / 2 - d.wall - 30.0
-    fy = d.io_y0 + 38.0
+    fy = d.pi_y0 + 30.0
     for r in range(4, 20, 5):
         ring = zcyl(r + 2.0, fx, fy, H - d.deck - 1, H + 1).cut(
             zcyl(r, fx, fy, H - d.deck - 2, H + 2)
@@ -562,8 +560,11 @@ def build_lid(d: Design):
 
     # bezel screws: inserts in back bosses, M2.5 countersunk through bezel
     i = d.wall + 3.0
-    lid_screws = [(-W / 2 + i, 4.6), (W / 2 - i, 4.6), (-W / 2 + i, dy1 + 6), (W / 2 - i, dy1 + 6),
-                  (-45, dy1 + 7), (45, dy1 + 7)]
+    # front corners, mid sides (outside the screen), and two in the chin
+    # between the screen and the hinge (clear of the cable opening and magnets)
+    chin_y = (dy1 + ay - 3) / 2
+    lid_screws = [(-W / 2 + i, 4.6), (W / 2 - i, 4.6), (-W / 2 + i, dcy), (W / 2 - i, dcy),
+                  (-40.0, chin_y), (40.0, chin_y)]
     for x, y in lid_screws:
         back = back.union(zcyl(3.0, x, y, zb, H + Tl - d.back_t + 0.01))
     for x, y in lid_screws:
@@ -590,7 +591,7 @@ def build_lid(d: Design):
     # magnets in the bezel face matching the base (boss on the inside so the
     # 2.2 mm pocket stays blind in a 2 mm bezel)
     for mx, my in magnet_points(d):
-        bezel = bezel.union(zcyl(3.5, mx, my, zb - 0.01, zb + 1.0))
+        bezel = bezel.union(zcyl(3.2, mx, my, zb - 0.01, zb + 1.0))
         bezel = bezel.cut(zcyl(p.magnet_d / 2 + 0.1, mx, my, H - 1, H + p.magnet_t + 0.2))
 
     # cable channel: open the rounded rear between the knuckle groups
@@ -612,9 +613,6 @@ def build_dummies(d: Design):
              d.Hs + d.kb_floor_t, d.Hs + d.kb_floor_t + p.kb_h)
     bat = box(-p.bat_w / 2, p.bat_w / 2, d.bay_y0, d.bay_y0 + p.bat_d, d.floor, d.floor + p.bat_h)
     pi = box(d.pi_x0, d.pi_x0 + p.pi_w, d.pi_y0, d.pi_y1, d.pi_z0, d.pi_z0 + p.pi_stack_h)
-    io = box(d.pi_x0 + 0.9, d.pi_x0 + 89.9, d.io_y0, d.pi_y0 + 4.9,
-             d.pi_z0 + 3.9, d.pi_z0 + 3.9 + p.io_t)
-    pi = pi.union(io)
     zb = d.H + d.bezel_t
     disp = box(-p.disp_w / 2, p.disp_w / 2, d.disp_front_margin, d.disp_front_margin + p.disp_h,
                zb, zb + p.disp_t)

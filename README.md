@@ -28,7 +28,7 @@ Designed in Autodesk Fusion.
 See [docs/exporting-from-fusion.md](docs/exporting-from-fusion.md) for how to
 export from Fusion and which file goes where.
 
-## Current design (draft 2)
+## Current design (draft 3)
 
 ![open](docs/renders/open_110.png)
 

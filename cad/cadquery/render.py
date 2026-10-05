@@ -114,6 +114,6 @@ draw(scene(110), "open_110.png", title="Open 110 degrees")
 draw(scene(110), "open_110_rear.png", azim=135, elev=20, title="Rear: hinge knuckles + cable channel")
 draw(scene(0, explode=40, hide=("keyboard",)), "exploded.png", elev=18, title="Exploded (closed position)")
 draw(scene(0, hide=("lid_bezel", "lid_back", "display", "keyboard", "base_top") + tuple(k for k in parts if k.startswith("knuckle"))),
-     "base_layout.png", elev=62, azim=-90, title="Base bottom: power bank (front), Pi 5 + HAT + IO adapter (rear left)")
+     "base_layout.png", elev=62, azim=-90, title="Base bottom: power bank (front), Pi 5 + NVMe HAT (rear left)")
 draw([(parts["base_top"], COLORS["base_top"], 1.0)] + [(parts[k], (0.8, 0.4, 0.1), 1.0) for k in parts if k.startswith("knuckle")],
      "base_top.png", elev=55, azim=-70, title="base_top: keyboard pocket, fan grill, cable slot")
