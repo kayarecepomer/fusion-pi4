@@ -1,0 +1,7 @@
+# CAD and mesh files are binary; don't try to diff or merge them as text.
+*.f3d   binary
+*.f3z   binary
+*.step  binary
+*.stp   binary
+*.stl   binary
+*.3mf   binary

@@ -1,0 +1,7 @@
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+*.tmp
+# Slicer scratch output (keep sliced files out of the repo)
+*.gcode
+*.bgcode
