@@ -5,3 +5,6 @@ Thumbs.db
 # Slicer scratch output (keep sliced files out of the repo)
 *.gcode
 *.bgcode
+# Python
+__pycache__/
+*.pyc
