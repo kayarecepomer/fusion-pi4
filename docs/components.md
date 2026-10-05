@@ -20,7 +20,7 @@ designed around), **STL** = measured from the printed parts, **DS** = manufactur
 | E1 | Raspberry Pi 5 | 1 | Raspberry Pi 5 (any RAM) | PCB 85 × 56; Ø2.7 holes on **58 × 49** pattern, 3.5 from edges. Envelope with connector overhang 90.1 × 57.7 | DS + STEP |
 | E2 | 7" IPS touch display | 1 | "IPS Touch LCD with cables" ([AliExpress](https://de.aliexpress.com/item/1005007432461342.html)), HDMI video + USB touch | Envelope **166.0 × 124.2 × 14.1** (incl. driver board). Glass/window pocket in frame **165.8 × 100.8**. 4 × Ø3.3 holes on **157.0 × 114.9** pattern, 4.0 / 4.6 from the outline edges | STEP + STL |
 | E3 | Waveshare NVMe HAT | 1 | "Waveshare NVME hat" ([AliExpress](https://de.aliexpress.com/item/1005009817065082.html)), PCIe FFC → M.2 2280 | Board 88.0 × 56.5 × 1.6; SSD 80 × 22 × 3.5. **Pi + HAT stack 90.1 × 57.9 × 26.1** on 17.5 mm standoffs | STEP |
-| E4 | Waveshare IO board | 1 | "Waveshare IO Board" ([AliExpress](https://de.aliexpress.com/item/1005010391360168.html)): 2 × full HDMI, USB-C, power header, fed by micro-HDMI/USB-C plugs into the Pi | PCB 85.0 × 33.6 × 1.0; envelope with plugs 89.0 × 39.2 × 18.8. 4 × Ø3.2 holes on **58.0 × 27.5** pattern | STEP |
+| E4 | Waveshare IO board (**dropped in the remix**, kaya 2026-10-05: short cables instead, saves ~30 mm base depth) | 0 | "Waveshare IO Board" ([AliExpress](https://de.aliexpress.com/item/1005010391360168.html)): 2 × full HDMI, USB-C, power header, fed by micro-HDMI/USB-C plugs into the Pi | PCB 85.0 × 33.6 × 1.0; envelope with plugs 89.0 × 39.2 × 18.8. 4 × Ø3.2 holes on **58.0 × 27.5** pattern | STEP |
 | E5 | Keyboard | 1 | **Rii X1 mini wireless keyboard (rounded-edge version)**, 2.4 GHz USB dongle, built-in touchpad, 300 mAh Li-po | Model envelope **179.4 × 64.9 × 13.9**; key-field opening in frame **150.5 × 58.5** (Riitek lists 150 × 60 × 10 for the key body) | STEP + STL + DS |
 | E6 | Power bank (V1) | 1 | **Anker PowerCore III Wireless 10K** (A1617 / "Anker 533"), 10 000 mAh, 18 W USB-C out | Model **152.0 × 69.0 × 19.5**; Anker lists 149 × 68 × 19, ~240 g | STEP + DS |
 | E6b | PD trigger module (V2 instead of E6) | 1 | Geekworm PD module ([AliExpress](https://de.aliexpress.com/item/1005009922081522.html)), runs from a USB-C PD charger | **TBM** | PD |
@@ -69,7 +69,7 @@ IO board, fan and power bank behind them.
 | Half | Contents | Footprint driver | Thickness driver |
 |------|----------|------------------|------------------|
 | Lid | Display (E2) | 166.0 × 124.2 envelope | 14.1 envelope; with 2 mm back wall and bezel ≈ 17–18 |
-| Base | Keyboard (E5) + Pi stack (E1, E3, E4) + power (E6 or E6b) | Keyboard 179.4 is the widest part; power bank 152.0 | Pi + HAT stack 26.1, power bank 19.5, keyboard 13.9 |
+| Base | Keyboard (E5) + Pi stack (E1, E3) + power (E6 or E6b) | Keyboard 179.4 is the widest part; power bank 152.0 | Pi + HAT stack 26.1, power bank 19.5, keyboard 13.9 |
 
 Observations:
 
@@ -83,8 +83,7 @@ Observations:
 - **Hinge cabling:** the display needs HDMI from the IO board and USB for touch and power. Use a flat FPC HDMI
   cable through a hollow hinge or a cable slot on the hinge axis.
 - **Display mounting:** the four Ø3.3 holes at 157.0 × 114.9 suit M3 or M2.5 screws into heat-set inserts in the lid back.
-- **IO board placement:** its HDMI/USB-C sockets sit along one 89 mm edge; put that edge on a base side wall for
-  external ports, as PiDeck does with its IO plate.
+- **No IO board:** the remix drops the Waveshare IO board. A short micro-HDMI to HDMI (or FPC HDMI) cable goes from the Pi to the display through the hinge, and the Pi's own USB/Ethernet ports face a base side wall.
 
 ## 4. Still to measure
 
