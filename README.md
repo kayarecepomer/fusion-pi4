@@ -12,6 +12,7 @@ Designed in Autodesk Fusion.
 | Folder        | Contents                                                        |
 |---------------|-----------------------------------------------------------------|
 | `cad/fusion/` | Native Fusion archives (`.f3d`, or `.f3z` for multi-component designs). The editable source of truth. |
+| `cad/cadquery/` | Parametric CadQuery script that generates the STEP and STL files. |
 | `cad/step/`   | STEP exports (`.step`) so the model opens in any CAD tool.      |
 | `stl/`        | Print-ready meshes (`.stl` or `.3mf`), one file per printed part. |
 | `docs/`       | Notes, the export guide and the design report.                  |
@@ -26,3 +27,21 @@ Designed in Autodesk Fusion.
 
 See [docs/exporting-from-fusion.md](docs/exporting-from-fusion.md) for how to
 export from Fusion and which file goes where.
+
+## Current design (draft 2)
+
+![open](docs/renders/open_110.png)
+
+The first draft is a parametric [CadQuery](https://cadquery.readthedocs.io) script in
+`cad/cadquery/`, sized from PiDeck V1's own STEP assembly. It writes the STEP files to
+`cad/step/` and the print-ready STLs to `stl/`. The design report is in
+[docs/foldable-laptop-report.md](docs/foldable-laptop-report.md).
+
+```bash
+pip install cadquery
+python cad/cadquery/foldable_laptop.py && python cad/cadquery/check_fit.py && python cad/cadquery/render.py
+```
+
+## License
+
+Remix of PiDeck by Screase3D, shared under the same CC BY-NC-SA 4.0 license.
